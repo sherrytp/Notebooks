@@ -1,0 +1,85 @@
+
+---
+title: "R - DataLab"
+output:
+  html_document:
+    toc: true
+---
+
+Hello World!kdgjiwe
+
+```{r}
+# Cluster & Workspace
+```
+
+
+```{r}
+# Notebooks & Cells - Markdown 
+```
+
+
+```{r}
+%md
+# My title
+- first unnumbered list item _text in bold_
+- second unnumbered list item _text in italics_
+
+## Section one
+1. first numbered list item
+2. second numbered list item
+```
+
+##Attach your notebook to your micro-cluster with Attach menu on the top left
+
+```{r}
+5 types of values: character, double, integer, logical, and complex
+```
+
+
+```{r}
+R.Version()$version.string
+```
+
+
+```{r}
+typeof("3.13314")
+```
+
+
+```{r}
+3 types of attributes: character, numeric, logical 
+```
+
+
+```{r}
+4 special double values: -inf, inf, NaN and NA
+3 special integer values: -inf, inf and NA
+2 types of logical values: True and False
+```
+
+
+```{r}
+0/0
+```
+
+
+```{r}
+as.numeric("this is not a number")
+```
+
+
+```{r}
+as.character(234)
+```
+
+#Test Functions
+
+```{r}
+is.finite(56)
+```
+
+
+```{r}
+is.infinite(3/0)
+```
+

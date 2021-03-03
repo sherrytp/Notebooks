@@ -1,0 +1,321 @@
+
+---
+title: "1. Values & Variables R"
+output:
+  html_document:
+    toc: true
+---
+
+# Essentials - Values & Variables
+
+Source: Chapter 16. Vectors from 
+R for Data Science
+by Garrett Grolemund; Hadley Wickham
+Published by O'Reilly Media, Inc., 2016 
+(http://r4ds.had.co.nz, [Amazon](http://amzn.to/2aHLAQ1))
+## Table of contents
+
+1. Types of values 
+2. Classes of values
+3. Special values
+4. Missing values 
+5. Test functions
+6. Coercion
+7. Variables
+The following command indicates the version of R running in this notebook, or more accurately on the cluster to which this notebook is attached.
+
+```{r}
+R.Version()$version.string
+```
+
+There are two ways to classify values in R:
+1. by type, which indicates how they are stored
+2. by class, which indicates how they are used
+
+```{r}
+%md
+There are five __types__ of values in R: character, double, integer, logical and complex. Double values can be any number. Integer values can only be whole numbes. Complex numbers contain real and imaginary parts. 
+```
+
+
+```{r}
+typeof("Welcome!")
+```
+
+
+```{r}
+typeof(3.14159)
+```
+
+The number `5` is also stored as a `double` in R.
+
+```{r}
+typeof(5)
+```
+
+An integer number can be stored as an `integer` by writing the number with a capital `L` at the end. 
+
+For example,
+
+```{r}
+typeof(98L)
+```
+
+ There are two logical values: `TRUE`, `FALSE`.
+
+```{r}
+typeof(TRUE)
+```
+
+
+```{r}
+ typeof(FALSE)
+```
+
+
+```{r}
+typeof(1+4i)
+```
+
+R recognizes `pi` as a value
+
+```{r}
+typeof(pi)
+```
+
+Many R objects (values) have a _class attribute_ that indicates how that object can be used. 
+
+There are three basic class attributes, though there are many more. They are:
+
+```{r}
+class("hello")
+```
+
+
+```{r}
+class(1.9)
+```
+
+
+```{r}
+class(TRUE)
+```
+
+### Special values
+#### Doubles
+
+There are four special double values: `-Inf`, `Inf`, `NaN` and `NA`.
+
+There are three special integer values: `-Inf`, `Inf` and `NA`.
+A calculation will result in `Inf` or `-Inf` if it exceeds the capacity of R to store it. 
+
+This happens in at least these two cases:
+1. The result is too large
+1. Dividing by zero
+
+```{r}
+2^100000000000000000000000
+```
+
+
+```{r}
+
+-2^100000
+```
+
+
+```{r}
+1/0
+```
+
+There is one instance I know about where a calculation will result in `NaN` (not a number.) 
+
+This is `0/0`.
+
+```{r}
+0/0
+```
+
+Often `NA` is the result when R expects to read in a number but is given something that is not a number. 
+
+For instance,
+
+```{r}
+as.numeric("this isn't a number")
+```
+
+
+```{r}
+as.numeric("123")
+```
+
+
+```{r}
+as.character(234)
+```
+
+### Logical Values
+
+There are two logical values: `TRUE`, `FALSE`.
+
+```{r}
+typeof(FALSE)
+```
+
+
+```{r}
+typeof(TRUE)
+```
+
+### Missing values
+
+Each of these types have their own missing value, but in most cases we will see `NA`.
+
+```{r}
+typeof(NA_integer_)
+```
+
+
+```{r}
+typeof(NA_real_)
+```
+
+
+```{r}
+typeof(NA_character_)
+```
+
+The `NA` value is of type logical.
+
+```{r}
+typeof(NA)
+```
+
+### Test Functions
+
+There are a handful of functions that test values: `is.finite`, `is.infinite`, `is.na`, `is.nan`.
+
+```{r}
+is.finite(56)
+```
+
+
+```{r}
+is.finite(3/0)
+```
+
+
+```{r}
+is.infinite(3/0)
+```
+
+
+```{r}
+is.na(NA)
+```
+
+
+```{r}
+is.nan(0/0)
+```
+
+### Coercion
+
+Values of one type can be converted to another type. This can happen explicitly or implicitly.
+#### Explicit Coercion
+
+```{r}
+as.logical(0)
+```
+
+
+```{r}
+as.logical(1)
+```
+
+
+```{r}
+as.logical("T")
+```
+
+
+```{r}
+as.integer(5.812367)
+```
+
+
+```{r}
+as.double("3")
+```
+
+#### Implicit Coercion
+
+```{r}
+TRUE + 2
+```
+
+
+```{r}
+FALSE * 3
+```
+
+
+```{r}
+3.4 * 2
+```
+
+### Variables
+
+Values can be stored in variables in three ways:
+1. With the equal sign `=`
+2. With the left arrow `<-`
+3. With the right arrow `->`
+
+```{r}
+3 -> x
+x
+```
+
+Recall that notebook code cells return the last value when they are run.
+
+```{r}
+x = "Hello"
+```
+
+
+```{r}
+x
+```
+
+
+```{r}
+y <- 5
+```
+
+
+```{r}
+x
+y
+```
+
+
+```{r}
+5 -> a
+```
+
+
+```{r}
+a
+```
+
+
+```{r}
+z = TRUE
+```
+
+
+```{r}
+z
+```
+
+__The End__

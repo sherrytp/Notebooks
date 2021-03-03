@@ -1,0 +1,150 @@
+
+---
+title: "3. Augmented Vectors R"
+output:
+  html_document:
+    toc: true
+---
+
+# Essentials - Augmented Vectors
+
+See Chapter 16. Vectors from 
+R for Data Science
+by Garrett Grolemund; Hadley Wickham
+Published by O'Reilly Media, Inc., 2016 
+(http://r4ds.had.co.nz, [Amazon](http://amzn.to/2aHLAQ1))
+![alt](http://www.scatter.com/images/DataLab_logo.jpg)
+## Table Of Contents
+1. Factor Vectors 
+2. Date and date-time vectors
+3. Dataframes and Tibbles
+
+  In the previous notebooks, we covered atomic vectors.    
+     In this notebook, you will get to learn three ways to create augmented vectors from atomic vectors.
+## Factor vectors
+
+Factors are used to represent categorical data. They are stored as integers and have corresponding labels for each integer.
+
+For instance, blue corresponds `1`, green corresponds to `2` and red corresponds to `3`. See the command below. This integers may be different when you run the command below, but in practice we use the labels (not the integers.) 
+
+See: https://www.stat.berkeley.edu/classes/s133/factors.html
+Factor vectors are often created from character vectors.
+
+```{r}
+as.factor(c("red", "green", "blue", "blue")) -> rgb
+rgb
+```
+
+Notice though that the levels are in alphabetical order.
+
+```{r}
+levels(rgb)
+```
+
+In case it's necessary for the levels to be in a certain order, the factor() command can be used. Consider the following example in which the vector importance denotes the different levels of importance a task might have.
+
+```{r}
+importance=as.factor(c("medium","low","high"))
+importance
+```
+
+It would be better if the levels of the factor importance were in ascending order of importance.
+
+```{r}
+importance=factor(importance, levels=c("low", "medium","high"))
+importance
+```
+
+The _type_ of a vector indicates how it is __stored__.
+
+```{r}
+typeof(rgb)
+```
+
+The _class_ of a vector indicates how it is __used__.
+
+```{r}
+class(rgb)
+```
+
+## Date and Date-time Vectors
+
+Date/date-time vectors are usually created from character vectors. 
+
+One of the easiest ways to work with dates is to use the `lubridate` package/library. 
+
+See: https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html
+
+```{r}
+library(lubridate)
+```
+
+
+```{r}
+lubridate::dmy("22 April 2018") -> my_date
+my_date
+```
+
+
+```{r}
+lubridate::dmy("April 22, 2018") -> my_date
+my_date
+```
+
+
+```{r}
+lubridate::mdy("April 22, 2018") -> my_date
+my_date
+```
+
+
+```{r}
+?lubridate()
+```
+
+
+```{r}
+class(my_date)
+```
+
+
+```{r}
+lubridate::ymd_hm("1956-12-31 23:50") -> my_date_time
+my_date_time
+```
+
+
+```{r}
+year(my_date_time)
+```
+
+
+```{r}
+day(my_date_time)
+```
+
+
+```{r}
+wday(my_date_time, label=TRUE)
+```
+
+See the link https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html for time zones, time intervals and arithmetic with times.
+### Dataframes and Tibbles
+
+Dataframes and tibbles are ways of storing tables in R. 
+- Dataframes (`data.frame`) are part of the base R installation. 
+- Tibbles (`tibble`) come from the `tibble` package/library, which is part of the `tidyverse` library.
+
+Dataframes are introduced by the notebooks in `/Data Lab Notebooks/R/Essentails/Dataframes`.
+
+Tibbles will be introduced, but at this point I don't know where. (Stay tuned.)
+needs_work - Tibbles__
+__Exercise__: Use a lubridate function to create a date object from the string "Sep 11, 2017" and store this in a variable named `my_date`.
+
+Display the contents of this variable. 
+
+ Search online for lubridate documentation to find the proper function to use.
+__Exercise__: Use a lubridate function to create a date-time object from the string "11 Sep 2017 7:30" and store this in a variable named `my_datetime`.
+
+Display the contents of this variable.
+__The End__

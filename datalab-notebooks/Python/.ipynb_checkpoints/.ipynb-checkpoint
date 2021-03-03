@@ -1,0 +1,1966 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "-ueE1NdccOsX"
+   },
+   "source": [
+    "# Classes & Objects - Credit Approval Dataset"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "q9PCtaOeS7I5"
+   },
+   "source": [
+    "This notebook demonstrates \n",
+    "- Python classes\n",
+    "- Scikit-learn transformer classes \n",
+    "- Scikit-learn `Pipeline` class\n",
+    "- Scikit-learn `FeatureUnion` class\n",
+    "\n",
+    "The dataset created below is used in most of the demonstrations. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "Gaxo4tyLcWRo"
+   },
+   "source": [
+    "The credit approval dataset is read by the `get_initial_pdf` function. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "HxLcuqivTOZZ"
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "def get_initial_pdf(): \n",
+    "    pdf = pd.read_csv('https://raw.githubusercontent.com/datalab-datasets/credit-approval/master/crx.data',\n",
+    "                    header=None,\n",
+    "                    names=[f'col_{col_num}' for col_num in range(16)],\n",
+    "                    dtype={f'col_{num}': 'float' for num in [1,2,7,13,14]},\n",
+    "                    na_values=['?']\n",
+    "                    ) \\\n",
+    "          .replace(to_replace={'col_15': {'+':1.0, '-':0.0}}) \n",
+    "    return pdf"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "Vc1jMGp2ceg7"
+   },
+   "source": [
+    "It is stored in the `initial_pdf` variable. We will use this later. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "fVX_YKoUU5cQ"
+   },
+   "outputs": [],
+   "source": [
+    "initial_pdf = get_initial_pdf()\n",
+    "float_pdf   = initial_pdf.select_dtypes(include='float')\n",
+    "object_pdf  = initial_pdf.select_dtypes(include='object')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "I3UxBplp6guB"
+   },
+   "source": [
+    "For reasons that will make more sense later, the dataset is split into two pieces: \n",
+    "- the `float` columns are in `float_pdf` \n",
+    "- the `object` columns are in `object_pdf`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "pnAnnQYEcHwI"
+   },
+   "source": [
+    "## Classes and objects\n",
+    "There are three types of methods: \n",
+    "- init\n",
+    "- get\n",
+    "- set "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "SIrlUrcaTmoI"
+   },
+   "source": [
+    "This class has only an init method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "AqlCYSZsdV66"
+   },
+   "outputs": [],
+   "source": [
+    "class Person: \n",
+    "    def __init__(self,name=''): \n",
+    "        self.name=name"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "BdKOLLIAdmnE"
+   },
+   "outputs": [],
+   "source": [
+    "host = Person(name=\"David\")\n",
+    "brother = Person(name='John')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "9Jc6PE74d_kf",
+    "outputId": "a82b7dd2-987d-4324-ae1c-38115c82b1ad"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('David', 'John')"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.name, brother.name"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "4e1L10q4Try2"
+   },
+   "source": [
+    "A \"get\" method is added to this class. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "28dPfeJyeReI"
+   },
+   "outputs": [],
+   "source": [
+    "class Person: \n",
+    "    def __init__(self,name=''):\n",
+    "        self.name=name\n",
+    "    def get_name(self):\n",
+    "        return self.name"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "UUCrBkLAeaNx"
+   },
+   "outputs": [],
+   "source": [
+    "host = Person('david')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "synfGqOHeiId",
+    "outputId": "76e50d07-45e5-4ad9-81f6-5043b3fdbd41"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'david'"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.get_name()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "2MyHPZq9TwPy"
+   },
+   "source": [
+    "A \"set\" method is added to this class. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "XyVzdb1FfNyo"
+   },
+   "outputs": [],
+   "source": [
+    "class Person: \n",
+    "    def __init__(self,name=''):\n",
+    "        self.name=name\n",
+    "    def get_name(self):\n",
+    "        return self.name\n",
+    "    def set_name(self,name):\n",
+    "        self.name=name\n",
+    "        return self"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "U3bz7t1PfTQ9"
+   },
+   "outputs": [],
+   "source": [
+    "host = Person()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "OQvPBrUEfX87",
+    "outputId": "df1f8aa7-5e4a-453d-d434-f8e488787234"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "''"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.get_name()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "cxSeQz49fbQP",
+    "outputId": "fac9e3ef-234d-4584-b8b4-87e10828e80c"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<__main__.Person at 0x7f2762465400>"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.set_name('David')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "yeZp1KWRfeI7",
+    "outputId": "4e7ae2e7-91c2-460f-f2a4-57770da917a0"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'David'"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.get_name()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "9MowHhb1fguZ",
+    "outputId": "31e7f2c7-b516-4e13-a08f-f3932adecfcc"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'Davie'"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "host.set_name('Davie').get_name()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "428XjcT4KLEK"
+   },
+   "source": [
+    "From this section remember:\n",
+    "- The \"init\" method records the initial parameters used when creating the object\n",
+    "- The \"get\" method return values from the object\n",
+    "- The \"set\" method stores values in the object and returns `self` (the object)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "gxnznmwdgHvT"
+   },
+   "source": [
+    "## Transformer classes and objects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "4gzNyIvYT6X9"
+   },
+   "source": [
+    "Two examples of transformer classes are created below."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "bwwt5vo57fMp"
+   },
+   "source": [
+    "### `DoNothing` class (first example)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "V8axzBrDUAYB"
+   },
+   "source": [
+    "This class is the minimum needed to create a transformer class. When you are creating a new class, this might be a good place to start (no errors)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "TPATgOp1g96l"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.base import BaseEstimator, TransformerMixin\n",
+    "class DoNothing(BaseEstimator, TransformerMixin):\n",
+    "    def __init__(self):\n",
+    "        return\n",
+    "    def fit(self, X, y=None):\n",
+    "        return self\n",
+    "    def transform(self, X):\n",
+    "        return X"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "FUlRDzoshepQ"
+   },
+   "outputs": [],
+   "source": [
+    "no_op = DoNothing()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "3xymTjNihxvu",
+    "outputId": "375f4c10-9f96-467e-f6fd-fb84550dbe6c"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "DoNothing()"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "no_op.fit(initial_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "T4NI_Nslh4mm"
+   },
+   "outputs": [],
+   "source": [
+    "transformed_pdf = no_op.transform(initial_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "nD9EzuDJiNWK",
+    "outputId": "9b1e8fbc-e7b2-4f70-da1f-5434e02aeb53"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "transformed_pdf.equals(initial_pdf)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "DJNy-AdK7k-S"
+   },
+   "source": [
+    "### `DataFrameSelector` class (second example)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "fnR8XQ69UTPv"
+   },
+   "source": [
+    "This class save an init parameter as an attribute and transforms any dataframe passed to the transform method by returned only the columns listed in the init method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "hd03ol_W7tWF"
+   },
+   "outputs": [],
+   "source": [
+    "class DataFrameSelector(BaseEstimator, TransformerMixin):\n",
+    "    def __init__(self, attribute_names=[]):\n",
+    "        self.attribute_names = attribute_names\n",
+    "    def fit(self, X, y=None):\n",
+    "        return self\n",
+    "    def transform(self, X):\n",
+    "        return X[self.attribute_names]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 195
+    },
+    "colab_type": "code",
+    "id": "ZlJRYWSO-aUn",
+    "outputId": "4ca759f7-2d79-41a6-dd8d-4f49422ca5da"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>col_1</th>\n",
+       "      <th>col_2</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>30.83</td>\n",
+       "      <td>0.000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>58.67</td>\n",
+       "      <td>4.460</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>24.50</td>\n",
+       "      <td>0.500</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>27.83</td>\n",
+       "      <td>1.540</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>20.17</td>\n",
+       "      <td>5.625</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   col_1  col_2\n",
+       "0  30.83  0.000\n",
+       "1  58.67  4.460\n",
+       "2  24.50  0.500\n",
+       "3  27.83  1.540\n",
+       "4  20.17  5.625"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "(DataFrameSelector(attribute_names=['col_1','col_2'])\n",
+    ".fit(float_pdf)\n",
+    ".transform(float_pdf)\n",
+    ".head()\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "jVnC1Rf3quDH"
+   },
+   "source": [
+    "## Transforming `object` columns "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "ZTtFnwTUUn9p"
+   },
+   "source": [
+    "In this section objects from two common Scikit-learn transformer classes are used to transform the `object_pdf` dataframe. The result of the first is passed to the second.\n",
+    "\n",
+    "- The `fit` method of a transformer class is a \"set\" method. \n",
+    "- The `transform` method of a transformer class is a \"get\" method."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "abhA9ezpstJW"
+   },
+   "source": [
+    "### `Object` - `SimpleImputer`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "pnfu-E519gVM"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.impute import SimpleImputer\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "lMJa5zVYq3CL"
+   },
+   "outputs": [],
+   "source": [
+    "imp = SimpleImputer(missing_values=np.nan,\n",
+    "                    strategy='most_frequent')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 50
+    },
+    "colab_type": "code",
+    "id": "LlqkLLeGr2Mg",
+    "outputId": "8660f3d8-320b-423c-8a55-22dd4f871e41"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "SimpleImputer(add_indicator=False, copy=True, fill_value=None,\n",
+       "              missing_values=nan, strategy='most_frequent', verbose=0)"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "imp.fit(object_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "WzNM_TLzr-TQ",
+    "outputId": "9cdf8745-f22d-40ad-d183-97e291fb6a10"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['b', 'u', 'g', 'c', 'v', 't', 'f', 'f', 'g'], dtype=object)"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "imp.statistics_"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 67
+    },
+    "colab_type": "code",
+    "id": "VWoRiv4b9sna",
+    "outputId": "851f07e3-dc3f-407a-a011-759756225a30"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['col_0', 'col_3', 'col_4', 'col_5', 'col_6', 'col_8', 'col_9', 'col_11',\n",
+       "       'col_12'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "object_pdf.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 67
+    },
+    "colab_type": "code",
+    "id": "HWgbsQ6S9zVw",
+    "outputId": "7ca3bc05-212c-4e98-8043-c7a12a0b1122"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "b    468\n",
+       "a    210\n",
+       "Name: col_0, dtype: int64"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "object_pdf.col_0.value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 84
+    },
+    "colab_type": "code",
+    "id": "Z638GT_79_YJ",
+    "outputId": "1620951f-c047-4fe5-d0d9-4e5f30aa4ec3"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "u    519\n",
+       "y    163\n",
+       "l      2\n",
+       "Name: col_3, dtype: int64"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "object_pdf.col_3.value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "nGvr5NOXsBzl"
+   },
+   "outputs": [],
+   "source": [
+    "imputed_object_arr = imp.transform(object_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 134
+    },
+    "colab_type": "code",
+    "id": "a8OCR_IlsWhr",
+    "outputId": "279a06a1-9734-4a98-cddd-58ef27257b1b"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([['b', 'u', 'g', ..., 't', 'f', 'g'],\n",
+       "       ['a', 'u', 'g', ..., 't', 'f', 'g'],\n",
+       "       ['a', 'u', 'g', ..., 'f', 'f', 'g'],\n",
+       "       ...,\n",
+       "       ['a', 'y', 'p', ..., 't', 't', 'g'],\n",
+       "       ['b', 'u', 'g', ..., 'f', 'f', 'g'],\n",
+       "       ['b', 'u', 'g', ..., 'f', 't', 'g']], dtype=object)"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "imputed_object_arr"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "TQ_BA3rQooYd"
+   },
+   "source": [
+    "### `Object` - `OneHotEncoder`\n",
+    "\n",
+    "- https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Pj7YIWkXo7MV"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import OneHotEncoder"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "yhMIRPiCo25I"
+   },
+   "outputs": [],
+   "source": [
+    "ohe = OneHotEncoder()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 185
+    },
+    "colab_type": "code",
+    "id": "N80Ugn0HtqJx",
+    "outputId": "e59cd62a-faf9-468c-d45f-1182e0a9071f"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([['b', 'u', 'g'],\n",
+       "       ['b', 'u', 'g'],\n",
+       "       ['a', 'u', 'g'],\n",
+       "       ['b', 'y', 'p'],\n",
+       "       ['b', 'y', 'p'],\n",
+       "       ['b', 'u', 'g'],\n",
+       "       ['b', 'u', 'g'],\n",
+       "       ['a', 'u', 'g'],\n",
+       "       ['b', 'u', 'g'],\n",
+       "       ['a', 'u', 'g']], dtype=object)"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "test_arr = imputed_object_arr[5:15,:3]\n",
+    "test_arr"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 50
+    },
+    "colab_type": "code",
+    "id": "0bK5d0JBo2t2",
+    "outputId": "39f93c5c-e406-439e-9bb1-da35ca16d9c8"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<10x6 sparse matrix of type '<class 'numpy.float64'>'\n",
+       "\twith 30 stored elements in Compressed Sparse Row format>"
+      ]
+     },
+     "execution_count": 44,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ohe.fit(test_arr).transform(test_arr) #.todense()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "1NOJIMiWvCcz"
+   },
+   "outputs": [],
+   "source": [
+    "ohe_imputed_object_arr = ohe.fit(imputed_object_arr).transform(imputed_object_arr)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 134
+    },
+    "colab_type": "code",
+    "id": "umNkcKmZvMDU",
+    "outputId": "6ea932c0-c6b6-46a9-8f00-41e75ba4cfe4"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "matrix([[0., 1., 0., ..., 1., 0., 0.],\n",
+       "        [1., 0., 0., ..., 1., 0., 0.],\n",
+       "        [1., 0., 0., ..., 1., 0., 0.],\n",
+       "        ...,\n",
+       "        [1., 0., 0., ..., 1., 0., 0.],\n",
+       "        [0., 1., 0., ..., 1., 0., 0.],\n",
+       "        [0., 1., 0., ..., 1., 0., 0.]])"
+      ]
+     },
+     "execution_count": 43,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ohe_imputed_object_arr.todense()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "FbtCFki-WPMd"
+   },
+   "source": [
+    "The two objects above transformed the `object_pdf` by\n",
+    "- replacing any missing values with the most frequent value in that columns\n",
+    "- encoding categorical/object columns as multiple columns of `0`/`1`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "jCrFq9sZkigY"
+   },
+   "source": [
+    "## `Float`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "d-WSpQOWWv3A"
+   },
+   "source": [
+    "In this section objects from two common Scikit-learn transformer classes are used to transform the `float_pdf` dataframe. The result of the first is passed to the second.\n",
+    "\n",
+    "Recall that:\n",
+    "- The `fit` method of a transformer class is a \"set\" method. \n",
+    "- The `transform` method of a transformer class is a \"get\" method."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "NQrA9HkswJfa"
+   },
+   "source": [
+    "### `Float` - `SimpleImputer`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "B2aW_fJ1klEr"
+   },
+   "source": [
+    "- https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 62,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 134
+    },
+    "colab_type": "code",
+    "id": "gSxcF2IoXwMx",
+    "outputId": "3526e2f9-a675-46e4-ab63-40004b22f6cd"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "col_1     12\n",
+       "col_2      0\n",
+       "col_7      0\n",
+       "col_13    13\n",
+       "col_14     0\n",
+       "col_15     0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 62,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "float_pdf.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "aPZafbjblrSP"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.impute import SimpleImputer\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "YSKIOQWPoK6d"
+   },
+   "outputs": [],
+   "source": [
+    "imp = SimpleImputer(missing_values=np.nan, strategy='mean')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 50
+    },
+    "colab_type": "code",
+    "id": "kjual6hNoN0k",
+    "outputId": "2654b0b0-0105-440c-ff2b-f4d253d7b61d"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "SimpleImputer(add_indicator=False, copy=True, fill_value=None,\n",
+       "              missing_values=nan, strategy='mean', verbose=0)"
+      ]
+     },
+     "execution_count": 47,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "imp.fit(float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 50
+    },
+    "colab_type": "code",
+    "id": "UDpdBvpGXLgP",
+    "outputId": "13d67d22-ed4f-4d2f-9630-05c18920fb96"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([3.15681711e+01, 4.75872464e+00, 2.22340580e+00, 1.84014771e+02,\n",
+       "       1.01738551e+03, 4.44927536e-01])"
+      ]
+     },
+     "execution_count": 49,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "imp.statistics_"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "6Hw_M9c2XSQH",
+    "outputId": "cd0df9a7-36d7-45bb-ae38-60f4de42f420"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['col_1', 'col_2', 'col_7', 'col_13', 'col_14', 'col_15'], dtype='object')"
+      ]
+     },
+     "execution_count": 50,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "float_pdf.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "oulOOQXtusXd"
+   },
+   "outputs": [],
+   "source": [
+    "imputed_float_arr = imp.transform(float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 61,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "pcdHQccUXjJX",
+    "outputId": "c1175994-ebd3-447c-d152-a2b006339a44"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0"
+      ]
+     },
+     "execution_count": 61,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.sum(np.isnan(imputed_float_arr))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "eX4wooUgwQLR"
+   },
+   "source": [
+    "### `Float` - `MinMaxScaler`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 68,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "U3RdyJkvX6AN",
+    "outputId": "1caa06d3-3a24-4ec4-b41e-0738480a92b1"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([8.025e+01, 2.800e+01, 2.850e+01, 2.000e+03, 1.000e+05, 1.000e+00])"
+      ]
+     },
+     "execution_count": 68,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.max(imputed_float_arr,axis=0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "u6GbINxbwPx4"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import MinMaxScaler\n",
+    "scaler = MinMaxScaler()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "wbfNl03WwgMu",
+    "outputId": "1d593b80-8fee-4f91-d115-b78cdce543c4"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MinMaxScaler(copy=True, feature_range=(0, 1))"
+      ]
+     },
+     "execution_count": 70,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "scaler.fit(imputed_float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 50
+    },
+    "colab_type": "code",
+    "id": "7_eNF7lYwnSz",
+    "outputId": "e15ad366-1f59-4035-b4c9-5cc00a6c116e"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(array([13.75,  0.  ,  0.  ,  0.  ,  0.  ,  0.  ]),\n",
+       " array([8.025e+01, 2.800e+01, 2.850e+01, 2.000e+03, 1.000e+05, 1.000e+00]))"
+      ]
+     },
+     "execution_count": 71,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "scaler.data_min_, scaler.data_max_"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "15a0MDiEw1lD"
+   },
+   "outputs": [],
+   "source": [
+    "scaled_imputed_float_arr = scaler.transform(imputed_float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 34
+    },
+    "colab_type": "code",
+    "id": "CDIatNuRLqdE",
+    "outputId": "e293084a-c991-43f9-c67d-ca130a9a6b7a"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(array([0., 0., 0., 0., 0., 0.]), array([1., 1., 1., 1., 1., 1.]))"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "(scaled_imputed_float_arr.min(axis=0), \n",
+    " scaled_imputed_float_arr.max(axis=0)\n",
+    " )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "g_cSC2Emx0y5"
+   },
+   "source": [
+    "## `Object` - `Pipeline`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "t8Tc_mvxYhgG"
+   },
+   "source": [
+    "The pair of transformations (impute, one hot encoding) are chained tohether with a `Pipeline` object, which allows you to run two transformations with a single command. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "T8XWH9SryFRu"
+   },
+   "outputs": [],
+   "source": [
+    "imp = SimpleImputer(missing_values=np.nan,strategy='most_frequent')\n",
+    "imputed_object_arr =  imp.fit(object_pdf).transform(object_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "25MLHYdDzXsT"
+   },
+   "outputs": [],
+   "source": [
+    "ohe = OneHotEncoder()\n",
+    "ohe_imputed_object_arr = ohe.fit(imputed_object_arr).transform(imputed_object_arr)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "hc1rBetsMTE3"
+   },
+   "outputs": [],
+   "source": [
+    "ohe_imputed_object_arr.todense()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "izrPlR3VzXd5"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.pipeline import Pipeline\n",
+    "imp_ohe_pipe = Pipeline(steps=[('imp_obj', SimpleImputer(missing_values=np.nan,strategy='most_frequent')),\n",
+    "                               ('ohe_obj', OneHotEncoder())\n",
+    "                               ]\n",
+    ")              "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "3sFv4WfN0V5K"
+   },
+   "outputs": [],
+   "source": [
+    "pipe_ohe_imputed_object_arr = imp_ohe_pipe.fit(object_pdf).transform(object_pdf)\n",
+    "np.array_equal(pipe_ohe_imputed_object_arr.todense(),\n",
+    "                    ohe_imputed_object_arr.todense()\n",
+    "               )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "pORqp9Oz1C1Q"
+   },
+   "source": [
+    "## `Float` - `Pipeline`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "S68T589c1Btc"
+   },
+   "outputs": [],
+   "source": [
+    "imp = SimpleImputer(missing_values=np.nan, strategy='mean')\n",
+    "imputed_float_arr = imp.fit(float_pdf).transform(float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "PweqFKDV1ZRm"
+   },
+   "outputs": [],
+   "source": [
+    "scaler = MinMaxScaler()\n",
+    "scaled_imputed_float_arr = scaler.fit(imputed_float_arr).transform(imputed_float_arr)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Ctp2xjpS1nKt"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.pipeline import Pipeline\n",
+    "imp_sca_pipe = Pipeline(steps=[('imp_flt', SimpleImputer(missing_values=np.nan,strategy='mean')),\n",
+    "                               ('sca_flt', MinMaxScaler())\n",
+    "                               ]\n",
+    ")              "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "xYmj3fHJ1ztm"
+   },
+   "outputs": [],
+   "source": [
+    "pipe_scaled_imputed_float_arr = imp_sca_pipe.fit(float_pdf).transform(float_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "vGQJS22vB9uK"
+   },
+   "outputs": [],
+   "source": [
+    "np.array_equal(pipe_scaled_imputed_float_arr,\n",
+    "               scaled_imputed_float_arr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "colab_type": "text",
+    "id": "r-TNGaPACKBQ"
+   },
+   "source": [
+    "## `FeatureUnion`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "EdQS5XSICNMP"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.pipeline import FeatureUnion"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "T7ZfXLQ4Cvcc"
+   },
+   "outputs": [],
+   "source": [
+    "class SelectDtypePDF(BaseEstimator, TransformerMixin):\n",
+    "    def __init__(self, dtype=[]):\n",
+    "        self.dtype = dtype\n",
+    "    def fit(self, X, y=None):\n",
+    "        return self\n",
+    "    def transform(self, X):\n",
+    "        return X.select_dtypes(self.dtype)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "bueZBmBKDEUN"
+   },
+   "outputs": [],
+   "source": [
+    "SelectDtypePDF(dtype='float').fit(initial_pdf).transform(initial_pdf).head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "plTd91ZLNEoF"
+   },
+   "outputs": [],
+   "source": [
+    "float_pdf.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Gl2eOg5CD7Em"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.pipeline import Pipeline\n",
+    "sel_imp_sca_pipe = Pipeline(steps=[('sel_flt', SelectDtypePDF('float')),\n",
+    "                                   ('imp_flt', SimpleImputer(missing_values=np.nan,strategy='mean')),\n",
+    "                                   ('sca_flt', MinMaxScaler())])              "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "lA1ZdrL2EX_O"
+   },
+   "outputs": [],
+   "source": [
+    "np.array_equal(sel_imp_sca_pipe.fit(initial_pdf).transform(initial_pdf),\n",
+    "                   imp_sca_pipe.fit(float_pdf)  .transform(float_pdf))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Sp0o1EoIEtKS"
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.pipeline import Pipeline\n",
+    "sel_imp_ohe_pipe = Pipeline(steps=[('sel_obj', SelectDtypePDF('object')),\n",
+    "                                   ('imp_obj', SimpleImputer(missing_values=np.nan,strategy='most_frequent')),\n",
+    "                                   ('ohe_obj', OneHotEncoder())\n",
+    "                               ])              "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "6cPv25OCE9-Q"
+   },
+   "outputs": [],
+   "source": [
+    "np.array_equal(imp_ohe_pipe.fit(object_pdf).transform(object_pdf).todense(),\n",
+    "               sel_imp_ohe_pipe.fit(initial_pdf).transform(initial_pdf).todense()\n",
+    "               )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Aa472rvHCXhL"
+   },
+   "outputs": [],
+   "source": [
+    "float_object_fea_un = FeatureUnion(transformer_list=[('flt',sel_imp_sca_pipe),\n",
+    "                                                    ('obj',sel_imp_ohe_pipe)])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "F6nPdrRDFjAU"
+   },
+   "outputs": [],
+   "source": [
+    "fea_un_arr = float_object_fea_un.fit(initial_pdf).transform(initial_pdf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "u-SSsNggFz3z"
+   },
+   "outputs": [],
+   "source": [
+    "concat_flt_obj_arr = \\\n",
+    "np.concatenate((sel_imp_ohe_pipe.fit(initial_pdf).transform(initial_pdf).todense(),\n",
+    "                sel_imp_sca_pipe.fit(initial_pdf).transform(initial_pdf)),\n",
+    "               axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "klVCG8n1IpZA"
+   },
+   "outputs": [],
+   "source": [
+    "np.array_equal(fea_un_arr.shape, concat_flt_obj_arr.shape)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "7iFgJlyBI5rS"
+   },
+   "outputs": [],
+   "source": [
+    "float_object_fea_un = \\\n",
+    "FeatureUnion(\n",
+    "    transformer_list=[('flt',Pipeline(steps=[('sel_flt', SelectDtypePDF('float')),\n",
+    "                                             ('imp_flt', SimpleImputer(missing_values=np.nan,strategy='mean')),\n",
+    "                                             ('sca_flt', MinMaxScaler())])),\n",
+    "                      ('obj',Pipeline(steps=[('sel_obj', SelectDtypePDF('object')),\n",
+    "                                             ('imp_obj', SimpleImputer(missing_values=np.nan,strategy='most_frequent')),\n",
+    "                                             ('ohe_obj', OneHotEncoder())]))])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "cRtsEekOJo6I"
+   },
+   "outputs": [],
+   "source": [
+    "float_object_fea_un.fit(initial_pdf).transform(initial_pdf)"
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "include_colab_link": true,
+   "name": "Credit-approval Oct8.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}

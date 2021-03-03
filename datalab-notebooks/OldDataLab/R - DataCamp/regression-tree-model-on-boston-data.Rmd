@@ -1,0 +1,271 @@
+
+---
+title: "regression-tree-model-on-boston-data"
+output:
+  html_document:
+    toc: true
+---
+
+##Understanding data
+
+Each entry of this data set corresponds to a census tract, a statistical division of the area that is used by researchers to break down towns and cities. As a result, there will usually be multiple census tracts per town.   
+
+LON and LAT: the longitude and latitude of the center of the census tract.   
+MEDV: the median value of owner-occupied homes, measured in thousands of dollars.   
+CRIM: the per capita crime rate.   
+ZN: related to how much of the land is zoned for large residential properties.   
+INDUS: the proportion of the area used for industry.   
+CHAS: 1 if a census tract is next to the Charles River.   
+NOX: the concentration of nitrous oxides in the air, a measure of air pollution.   
+RM: the average number of rooms per dwelling.   
+AGE: the proportion of owner-occupied units built before 1940.   
+DIS: a measure of how far the tract is from centers of employment in Boston.   
+RAD: a measure of closeness to important highways.   
+TAX: the property tax per $10,000 of value.   
+PTRATIO: the pupil to teacher ratio by town.   
+
+
+### Reading the data
+
+```{r}
+boston = read.csv("../input/boston.csv")
+```
+
+###structure of the data
+
+```{r}
+str(boston)
+```
+
+### Plot LON vs LAT
+
+```{r}
+plot(boston$LON, boston$LAT)
+```
+
+###Highlighting the areas around the Charles River by blue color
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$CHAS==1], boston$LAT[boston$CHAS==1], col="blue", pch=19)
+```
+
+###Highlighting MIT area, wher TRACT equals to 3531 is used for MIT by red color
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$CHAS==1], boston$LAT[boston$CHAS==1], col="blue", pch=19)
+points(boston$LON[boston$TRACT==3531],boston$LAT[boston$TRACT==3531], col="red", pch=20)
+```
+
+### Investigating pollution
+
+```{r}
+summary(boston$NOX)
+```
+
+###Highlighting areas where pollution is beyond mean.
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$CHAS==1], boston$LAT[boston$CHAS==1], col="blue", pch=19)
+points(boston$LON[boston$TRACT==3531],boston$LAT[boston$TRACT==3531], col="red", pch=20)
+points(boston$LON[boston$NOX>=0.55], boston$LAT[boston$NOX>=0.55], col="green", pch=20)
+```
+
+Now we will look at how pricing vary with areas
+
+### Plot prices
+
+```{r}
+plot(boston$LON, boston$LAT)
+summary(boston$MEDV)
+```
+
+###Above mean price areas
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$MEDV>=21.2], boston$LAT[boston$MEDV>=21.2], col="red", pch=20)
+```
+
+## Linear Regression using LAT and LON
+
+###Finding the relationship between LAT, LON And MEDV
+
+```{r}
+plot(boston$LAT, boston$MEDV)
+plot(boston$LON, boston$MEDV)
+```
+
+Looks like there is no relation between them
+
+###Building a regression model
+
+```{r}
+latlonlm = lm(MEDV ~ LAT + LON, data=boston)
+summary(latlonlm)
+```
+
+### Visualize regression output
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$MEDV>=21.2], boston$LAT[boston$MEDV>=21.2], col="red", pch=20)
+
+latlonlm$fitted.values
+points(boston$LON[latlonlm$fitted.values >= 21.2], boston$LAT[latlonlm$fitted.values >= 21.2], col="blue", pch="$")
+```
+
+We saw it right from the start there's a big non-red spot, right in the middle of Boston, where the house prices were below the median. So the linear regression model isn't really doing a good job.
+
+###Building regression tree
+
+### Load CART packages
+
+```{r}
+library(rpart)
+library(rpart.plot)
+```
+
+### CART model
+
+```{r}
+latlontree = rpart(MEDV ~ LAT + LON, data=boston)
+```
+
+### ploting the tree
+
+```{r}
+prp(latlontree)
+```
+
+### Visualize output
+
+```{r}
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$MEDV>=21.2], boston$LAT[boston$MEDV>=21.2], col="red", pch=20)
+```
+
+
+```{r}
+fittedvalues = predict(latlontree)
+plot(boston$LON, boston$LAT)
+points(boston$LON[boston$MEDV>=21.2], boston$LAT[boston$MEDV>=21.2], col="red", pch=20)
+points(boston$LON[fittedvalues>21.2], boston$LAT[fittedvalues>=21.2], col="blue", pch="$")
+```
+
+We can see that CART Model do much more better job than linear regression model.
+
+### Simplify tree by increasing minbucket
+
+```{r}
+latlontree = rpart(MEDV ~ LAT + LON, data=boston, minbucket=50)
+plot(latlontree)
+text(latlontree)
+```
+
+### Visualize Output of the tree
+
+```{r}
+plot(boston$LON,boston$LAT)
+abline(v=-71.07)
+abline(h=42.21)
+abline(h=42.17)
+points(boston$LON[boston$MEDV>=21.2], boston$LAT[boston$MEDV>=21.2], col="red", pch=20)
+```
+
+here we carved out the low price areas by regression tree correctly.
+
+## Let's use all the variables
+
+### Split the data
+
+```{r}
+library(caTools)
+set.seed(123)
+split = sample.split(boston$MEDV, SplitRatio = 0.7)
+train = subset(boston, split==TRUE)
+test = subset(boston, split==FALSE)
+```
+
+### Create Linear Regression Model
+
+```{r}
+linreg = lm(MEDV ~ LAT + LON + CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO, data=train)
+summary(linreg)
+```
+
+### Make predictions
+
+```{r}
+linreg.pred = predict(linreg, newdata=test)
+linreg.sse = sum((linreg.pred - test$MEDV)^2)
+linreg.sse
+```
+
+### Create a CART model
+
+```{r}
+tree = rpart(MEDV ~ LAT + LON + CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO, data=train)
+prp(tree)
+```
+
+### Make predictions
+
+```{r}
+tree.pred = predict(tree, newdata=test)
+tree.sse = sum((tree.pred - test$MEDV)^2)
+tree.sse
+```
+
+sse is higher for the regression tree model, So now we will use cp parameter to improve the accuracy 
+of our model.
+
+### Load libraries for cross-validation
+
+```{r}
+library(caret)
+library(e1071)
+```
+
+### Number of folds
+
+```{r}
+tr.control = trainControl(method = "cv", number = 10)
+```
+
+### cp values
+
+```{r}
+cp.grid = expand.grid( .cp = (0:10)*0.001)
+```
+
+### Cross-validation
+
+```{r}
+tr = train(MEDV ~ LAT + LON + CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO, data = train, method = "rpart", trControl = tr.control, tuneGrid = cp.grid)
+```
+
+### Extract tree
+
+```{r}
+best.tree = tr$finalModel
+prp(best.tree)
+```
+
+### Make predictions
+
+```{r}
+best.tree.pred = predict(best.tree, newdata=test)
+best.tree.sse = sum((best.tree.pred - test$MEDV)^2)
+best.tree.sse
+```
+
+
+```{r}
+linreg.sse
+```
+
+So the best tree is not as good as the linear regression model. But cross validation did improve
+performance. Trees aren't always the best method you have available to you. But you should always try cross validating them to get as much performance out of them as you can.
