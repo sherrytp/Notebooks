@@ -1,0 +1,49 @@
+Year,Energy Sector,Carrier Type,Final Energy Demand,RE Share,CumSumEnergy
+2015,Transportation,Electricity,1503,0.015466743,1503
+2020,Transportation,Electricity,1855,0.018479986,1855
+2025,Transportation,Electricity,4930,0.062230906,4930
+2030,Transportation,Electricity,11034,0.184887429,11034
+2035,Transportation,Electricity,17582,0.365423115,17582
+2040,Transportation,Electricity,19380,0.4461838,19380
+2045,Transportation,Electricity,19142,0.477173787,19142
+2050,Transportation,Electricity,18839,0.499576764,18839
+2015,Transportation,Other Carrier,95682,,97185
+2020,Transportation,Other Carrier,98540,,100395
+2025,Transportation,Other Carrier,74292,,79222
+2030,Transportation,Other Carrier,48646,,59680
+2035,Transportation,Other Carrier,30531,,48113
+2040,Transportation,Other Carrier,24055,,43435
+2045,Transportation,Other Carrier,20974,,40116
+2050,Transportation,Other Carrier,18871,,37710
+2015,Industry,Electricity,30591,0.26938165,127776
+2020,Industry,Electricity,33856,0.283273603,134251
+2025,Industry,Electricity,38010,0.334866197,117232
+2030,Industry,Electricity,43105,0.402140151,102785
+2035,Industry,Electricity,47169,0.46774171,95282
+2040,Industry,Electricity,50266,0.506463595,93701
+2045,Industry,Electricity,53485,0.544302584,93601
+2050,Industry,Electricity,56877,0.57701092,94587
+2015,Industry,Other Carrier,82970,,210746
+2020,Industry,Other Carrier,85661,,219912
+2025,Industry,Other Carrier,75498,,192730
+2030,Industry,Other Carrier,64083,,166868
+2035,Industry,Other Carrier,53675,,148957
+2040,Industry,Other Carrier,48983,,142684
+2045,Industry,Other Carrier,44778,,138379
+2050,Industry,Other Carrier,41695,,136282
+2015,Buildings/Others,Electricity,40640,0.30989019,251386
+2020,Buildings/Others,Electricity,45183,0.334223577,265095
+2025,Buildings/Others,Electricity,49102,0.384401868,241832
+2030,Buildings/Others,Electricity,52520,0.447828938,219388
+2035,Buildings/Others,Electricity,57000,0.501136251,205957
+2040,Buildings/Others,Electricity,62762,0.549772725,205446
+2045,Buildings/Others,Electricity,68733,0.59594443,207112
+2050,Buildings/Others,Electricity,74438,0.6369431,210720
+2015,Buildings/Others,Other Carrier,90503,,341889
+2020,Buildings/Others,Other Carrier,90005,,355100
+2025,Buildings/Others,Other Carrier,78634,,320466
+2030,Buildings/Others,Other Carrier,64757,,284145
+2035,Buildings/Others,Other Carrier,56742,,262699
+2040,Buildings/Others,Other Carrier,51398,,256844
+2045,Buildings/Others,Other Carrier,46601,,253713
+2050,Buildings/Others,Other Carrier,42430,,253150
