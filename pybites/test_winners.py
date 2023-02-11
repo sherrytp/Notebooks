@@ -7,7 +7,7 @@ def test_print_game_stats(capfd):
             "julian has won 3 games", 
             "jim has won 1 game"]
     print_game_stats(GAME_STATS) 
-    output = capfd.readouterr()[0].strip()
+    output = capfd.readouterr()[0].splitlines()
 
     for line in prints: 
         assert line in output
