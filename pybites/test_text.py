@@ -1,4 +1,4 @@
-from text_pipe import split_in_columns
+from text import split_in_columns
 
 def text_split_in_columns(): 
     
