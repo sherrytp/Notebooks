@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from colors import print_colors
+from color import print_colors
 
 NOT_VALID = 'Not a valid color'
 
